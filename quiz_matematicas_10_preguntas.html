@@ -1,56 +1,777 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz de Matemáticas · 10 preguntas</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validez — Examen de matemáticas</title>
+
 <style>
-:root{--bg:#0b1020;--panel:#141c31;--panel2:#1b2742;--text:#eef3ff;--muted:#aab6d3;--accent:#7c9cff;--good:#37d6a3;--bad:#ff7185}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1c2a50 0,#0b1020 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
-main{width:min(850px,94%);margin:36px auto 60px}.hero,.quiz,.results{background:rgba(20,28,49,.96);border:1px solid #2a3859;border-radius:22px;padding:clamp(20px,4vw,36px);box-shadow:0 18px 55px #0003}
-.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.13em;font-size:.78rem}.hero h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;margin:12px 0}.hero p,.muted{color:var(--muted)}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}.pill{background:var(--panel2);border:1px solid #334467;border-radius:999px;padding:7px 12px;font-size:.88rem}
-button{font:inherit;font-weight:750;cursor:pointer;border:0;border-radius:12px;padding:12px 18px;transition:transform .15s,opacity .15s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.4;cursor:not-allowed;transform:none}.primary{background:var(--accent);color:#081126}.secondary{background:#263451;color:var(--text);border:1px solid #405174}
-.hidden{display:none!important}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.progress{height:8px;background:#283653;border-radius:20px;overflow:hidden;margin:14px 0 26px}.bar{height:100%;width:0;background:linear-gradient(90deg,#7c9cff,#37d6a3);transition:width .25s}
-.section{color:var(--accent);font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.question{font-size:clamp(1.25rem,3.5vw,1.75rem);margin:8px 0 22px}.options{display:grid;gap:11px}.option{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:#1a2540;color:var(--text);border:1px solid #344463;padding:14px 16px;border-radius:13px;font-weight:550}.option .letter{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:9px;background:#2a395b;color:#cdd8ff;font-weight:800}.option.selected{border-color:var(--accent);background:#25345a}.option.correct{border-color:var(--good);background:#123a37}.option.wrong{border-color:var(--bad);background:#462434}
-.controls{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.controls div{display:flex;gap:8px}.feedback{margin-top:16px;padding:12px 14px;border-radius:12px;background:#1d2a45;color:var(--muted)}.score{font-size:3.5rem;font-weight:900;color:var(--good);line-height:1.2}.review-item{padding:16px 0;border-bottom:1px solid #2d3a57}.review-item:last-child{border-bottom:0}.tag-good{color:var(--good)}.tag-bad{color:var(--bad)}footer{text-align:center;color:#8592b1;font-size:.82rem;margin-top:18px}
-@media(max-width:520px){main{margin:16px auto 32px}.controls{flex-direction:column}.controls>div{display:grid;grid-template-columns:1fr 1fr}.controls button{width:100%}}
-</style></head><body><main>
-<section class="hero" id="intro">
-<div class="eyebrow">Evaluación interactiva · 10 preguntas</div><h1>Quiz de<br>Matemáticas</h1>
-<p>Practica operaciones, álgebra básica y los conceptos iniciales de cálculo diferencial. Elige una respuesta por pregunta y al final revisa tu puntuación y las soluciones.</p>
-<div class="pills"><span class="pill">5 · Aritmética y álgebra</span><span class="pill">5 · Límites y derivadas</span><span class="pill">100 puntos</span></div>
-<p class="muted">Tiempo sugerido: 8 minutos. El temporizador es opcional y no afecta tu calificación.</p><button class="primary" id="startBtn">Comenzar quiz →</button>
-</section>
-<section class="quiz hidden" id="quiz">
-<div class="topline"><span class="section" id="partLabel"></span><strong id="timer">08:00</strong></div>
-<div class="topline"><span class="muted" id="count"></span><span class="muted" id="answered"></span></div><div class="progress"><div class="bar" id="bar"></div></div>
-<div class="section" id="topic"></div><h2 class="question" id="question"></h2><div class="options" id="options"></div>
-<div id="feedback" class="feedback hidden" aria-live="polite"></div>
-<div class="controls"><button class="secondary" id="prevBtn">← Anterior</button><div><button class="secondary" id="checkBtn">Revisar respuesta</button><button class="primary" id="nextBtn">Siguiente →</button><button class="primary hidden" id="finishBtn">Ver resultados</button></div></div>
-</section>
-<section class="results hidden" id="results"><div class="eyebrow">Quiz terminado</div><h1>Tu resultado</h1><div class="score" id="score">0/100</div><p id="summary" class="muted"></p><div class="pills" id="breakdown"></div><h2>Revisión de respuestas</h2><div id="review"></div><button class="primary" id="restartBtn">Volver a intentarlo ↻</button></section>
-<footer>Hecho para practicar · Puedes repetir el quiz las veces que quieras.</footer></main>
+:root {
+  --bg: #100d17;
+  --panel: #1b1526;
+  --panel2: #251c34;
+  --purple: #a855f7;
+  --light: #e9d5ff;
+  --text: #f5f0fc;
+  --muted: #b9abc9;
+  --green: #4ade80;
+  --red: #fb7185;
+  --border: #3b2c50;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 28px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: system-ui, Arial, sans-serif;
+  background:
+    radial-gradient(ellipse at top, #39204f 0%, transparent 48%),
+    var(--bg);
+  color: var(--text);
+}
+
+.container {
+  width: 100%;
+  max-width: 680px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  color: var(--light);
+  font-size: 35px;
+  font-weight: 850;
+  letter-spacing: -1.5px;
+  margin: 0;
+}
+
+.logo span { color: var(--purple); }
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 7px;
+}
+
+.card {
+  background: rgba(27, 21, 38, .96);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 26px;
+  box-shadow: 0 20px 65px #0005;
+}
+
+.topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tag {
+  display: inline-block;
+  background: #3a2252;
+  color: var(--light);
+  border: 1px solid #68428a;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.progress-text {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.progress {
+  width: 100%;
+  height: 6px;
+  background: #352941;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+
+.bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #9333ea, #d8b4fe);
+  transition: width .3s;
+}
+
+h2 {
+  font-size: clamp(21px, 4vw, 28px);
+  line-height: 1.4;
+  margin: 0 0 24px;
+  overflow-wrap: anywhere;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.option {
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 13px;
+  font: inherit;
+  cursor: pointer;
+  transition: .18s;
+  overflow-wrap: anywhere;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--purple);
+  background: #342346;
+  transform: translateY(-2px);
+}
+
+.letter {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  background: #443052;
+  color: var(--light);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.option.correct {
+  border-color: var(--green);
+  background: #153a2b;
+}
+
+.option.correct .letter {
+  background: #166534;
+  color: white;
+}
+
+.option.wrong {
+  border-color: var(--red);
+  background: #451e2b;
+}
+
+.option:disabled { cursor: default; }
+
+.feedback {
+  display: none;
+  margin-top: 19px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #251c34;
+  border: 1px solid var(--border);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.feedback.show {
+  display: block;
+  animation: appear .25s ease;
+}
+
+.feedback strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--light);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.primary {
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #9333ea, #7e22ce);
+  color: white;
+  padding: 13px 19px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primary:hover:not(:disabled) { filter: brightness(1.15); }
+
+.primary:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.result {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+
+.score {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--light);
+  margin: 10px 0;
+}
+
+.result h2 { margin-bottom: 8px; }
+
+.result p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.stats {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 13px;
+  background: var(--panel2);
+}
+
+.stats p { margin: 5px 0; }
+
+footer {
+  text-align: center;
+  color: #857594;
+  font-size: 12px;
+  margin-top: 22px;
+}
+
+[hidden] { display: none !important; }
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .card { padding: 19px; }
+  .options { grid-template-columns: 1fr; }
+  .logo { font-size: 31px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <h1 class="logo">Validez <span>♥</span></h1>
+    <div class="subtitle">si le atinas a todas te debo un beso :).</div>
+  </header>
+
+  <main class="card">
+
+    <section id="quiz">
+      <div class="topline">
+        <span class="tag" id="category">Aritmética</span>
+        <span class="progress-text" id="progress">Pregunta 1 de 20</span>
+      </div>
+
+      <div class="progress">
+        <div class="bar" id="bar"></div>
+      </div>
+
+      <h2 id="question"></h2>
+
+      <div class="options" id="options"></div>
+
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+
+      <div class="actions">
+        <button class="primary" id="next" disabled>
+          Siguiente pregunta →
+        </button>
+      </div>
+    </section>
+
+    <section id="results" hidden>
+      <div class="result">
+        <span class="tag">Examen terminado</span>
+        <div class="score" id="score">0/20</div>
+        <h2 id="message"></h2>
+        <p id="details"></p>
+
+        <div class="stats">
+          <p id="correctStats"></p>
+          <p id="wrongStats"></p>
+          <p id="percentStats"></p>
+        </div>
+
+        <button class="primary" id="restart">
+          Intentarlo de nuevo ↻
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>Hecho con cariño para aprender jugando.</footer>
+</div>
+
 <script>
-const questions=[
-{part:1,topic:"Aritmética",q:"¿Cuánto es 12 ÷ 3 + 2?",opts:["2","4","6","8"],a:2,exp:"Primero se hace la división: 12 ÷ 3 = 4. Luego se suma 2: resultado 6."},
-{part:1,topic:"Fracciones",q:"¿Cuánto es 1/2 + 1/4?",opts:["2/6","3/4","1/4","1"],a:1,exp:"1/2 equivale a 2/4; entonces 2/4 + 1/4 = 3/4."},
-{part:1,topic:"Álgebra",q:"Simplifica: 4x + 2x.",opts:["6","6x","8x","4x²"],a:1,exp:"Se suman los coeficientes: 4x + 2x = 6x."},
-{part:1,topic:"Ecuaciones",q:"Resuelve: x + 5 = 12.",opts:["5","6","7","17"],a:2,exp:"Resta 5 en ambos lados: x = 12 − 5 = 7."},
-{part:1,topic:"Potencias",q:"¿Cuánto es 3²?",opts:["6","9","8","12"],a:1,exp:"3² significa 3 × 3 = 9."},
-{part:2,topic:"Límites básicos",q:"Si f(x) = x + 2, ¿cuánto vale limₓ→₃ f(x)?",opts:["2","3","5","6"],a:2,exp:"Como la función es continua, sustituimos x por 3: 3 + 2 = 5."},
-{part:2,topic:"Límites básicos",q:"Calcula: limₓ→₂ x².",opts:["2","4","6","8"],a:1,exp:"Sustituimos x = 2: 2² = 4."},
-{part:2,topic:"Idea de derivada",q:"¿Qué representa la derivada de una función en un punto?",opts:["El área total siempre","La pendiente de la recta tangente","El valor de x siempre","La raíz de la función"],a:1,exp:"La derivada en un punto representa la pendiente de la recta tangente a la gráfica en ese punto."},
-{part:2,topic:"Derivadas",q:"Si f(x) = x², ¿cuál es su derivada?",opts:["x","2x","x³","2"],a:1,exp:"Aplicando la regla de la potencia, la derivada de x² es 2x."},
-{part:2,topic:"Derivadas",q:"Si f(x) = 3x, ¿cuál es f′(x)?",opts:["3","3x²","x","0"],a:0,exp:"La derivada de 3x es 3, porque la derivada de x es 1."}
-];
-const $=id=>document.getElementById(id);let idx=0,answers=Array(10).fill(null),checked=Array(10).fill(false),seconds=480,timerId=null;
-function start(){$("intro").classList.add("hidden");$("results").classList.add("hidden");$("quiz").classList.remove("hidden");idx=0;answers=Array(10).fill(null);checked=Array(10).fill(false);seconds=480;clearInterval(timerId);updateTimer();timerId=setInterval(()=>{seconds--;updateTimer();if(seconds<=0){clearInterval(timerId);finish();}},1000);render();}
-function updateTimer(){let m=Math.floor(seconds/60),s=seconds%60;$("timer").textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;$("timer").style.color=seconds<60?"var(--bad)":"var(--text)"}
-function render(){let q=questions[idx];$("partLabel").textContent=q.part===1?"Parte 1 · Aritmética y álgebra":"Parte 2 · Cálculo diferencial";$("count").textContent=`Pregunta ${idx+1} de 10`;$("answered").textContent=`Respondidas: ${answers.filter(v=>v!==null).length}`;$("bar").style.width=`${(idx+1)*10}%`;$("topic").textContent=q.topic;$("question").textContent=q.q;$("options").innerHTML="";
-q.opts.forEach((opt,i)=>{let b=document.createElement("button");b.className="option"+(answers[idx]===i?" selected":"");if(checked[idx]){b.disabled=true;if(i===q.a)b.classList.add("correct");else if(answers[idx]===i)b.classList.add("wrong")}let l=document.createElement("span");l.className="letter";l.textContent=String.fromCharCode(65+i);let t=document.createElement("span");t.textContent=opt;b.append(l,t);b.onclick=()=>{answers[idx]=i;render()};$("options").appendChild(b)});
-$("feedback").classList.toggle("hidden",!checked[idx]);if(checked[idx])$("feedback").textContent=(answers[idx]===q.a?"¡Correcto! ":"Respuesta incorrecta. ")+q.exp;
-$("prevBtn").disabled=idx===0;$("nextBtn").classList.toggle("hidden",idx===9);$("finishBtn").classList.toggle("hidden",idx!==9);$("checkBtn").disabled=answers[idx]===null||checked[idx]}
-function finish(){clearInterval(timerId);$("quiz").classList.add("hidden");$("results").classList.remove("hidden");let correct=answers.reduce((n,a,i)=>n+(a===questions[i].a?1:0),0),p1=questions.reduce((n,q,i)=>n+(q.part===1&&answers[i]===q.a?1:0),0);$("score").textContent=`${correct*10}/100`;$("summary").textContent=`Contestaste correctamente ${correct} de 10 preguntas.`;$("breakdown").innerHTML=`<span class="pill">Aritmética y álgebra: ${p1}/5</span><span class="pill">Cálculo diferencial: ${correct-p1}/5</span>`;$("review").innerHTML="";
-questions.forEach((q,i)=>{let d=document.createElement("div");d.className="review-item";let h=document.createElement("strong");h.textContent=`${i+1}. ${q.q}`;let r=document.createElement("p");r.className=answers[i]===q.a?"tag-good":"tag-bad";r.textContent=answers[i]===null?"Sin responder":answers[i]===q.a?"Correcta":"Tu respuesta: "+q.opts[answers[i]];let s=document.createElement("p");s.textContent=`Respuesta correcta: ${q.opts[q.a]}. ${q.exp}`;d.append(h,r,s);$("review").appendChild(d)});window.scrollTo({top:0,behavior:"smooth"})}
-$("startBtn").onclick=start;$("prevBtn").onclick=()=>{if(idx>0){idx--;render()}};$("nextBtn").onclick=()=>{if(idx<9){idx++;render()}};$("checkBtn").onclick=()=>{if(answers[idx]!==null){checked[idx]=true;render()}};$("finishBtn").onclick=finish;$("restartBtn").onclick=()=>{$("results").classList.add("hidden");$("intro").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})};
-</script></body></html>
+(() => {
+  "use strict";
+
+  const TOTAL = 20;
+  const $ = id => document.getElementById(id);
+
+  let questions = [];
+  let current = 0;
+  let correct = 0;
+  let answered = false;
+
+  const rand = (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const shuffle = array => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = rand(0, i);
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  // Crea cuatro respuestas diferentes, incluyendo la correcta.
+  function makeOptions(answer, distractors) {
+    const values = [...new Set([answer, ...distractors])]
+      .filter(Number.isFinite);
+
+    while (values.length < 4) {
+      const candidate = answer + rand(-12, 12);
+      if (!values.includes(candidate)) values.push(candidate);
+    }
+
+    return shuffle(values.slice(0, 4));
+  }
+
+  function question(category, prompt, answer, distractors, explanation) {
+    return {
+      category,
+      prompt,
+      answer,
+      options: makeOptions(answer, distractors),
+      explanation
+    };
+  }
+
+  // ─────────────────────────────
+  // 1. ARITMÉTICA: 5 preguntas
+  // ─────────────────────────────
+
+  function arithmeticQuestions() {
+    const result = [];
+
+    for (let i = 0; i < 2; i++) {
+      const a = rand(15, 150);
+      const b = rand(10, 100);
+      const answer = a + b;
+
+      result.push(question(
+        "Aritmética",
+        `${a} + ${b} = ?`,
+        answer,
+        [answer + rand(2, 10), answer - rand(2, 10), answer + rand(11, 20)],
+        `${a} + ${b} = ${answer}.`
+      ));
+    }
+
+    const a = rand(80, 250);
+    const b = rand(10, a - 1);
+    const subtraction = a - b;
+
+    result.push(question(
+      "Aritmética",
+      `${a} − ${b} = ?`,
+      subtraction,
+      [subtraction + 5, subtraction - 7, subtraction + 12],
+      `${a} − ${b} = ${subtraction}.`
+    ));
+
+    const m = rand(3, 12);
+    const n = rand(3, 12);
+    const product = m * n;
+
+    result.push(question(
+      "Aritmética",
+      `${m} × ${n} = ?`,
+      product,
+      [product + m, product - n, product + rand(3, 9)],
+      `${m} × ${n} = ${product}.`
+    ));
+
+    const divisor = rand(2, 12);
+    const quotient = rand(3, 15);
+    const dividend = divisor * quotient;
+
+    result.push(question(
+      "Aritmética",
+      `${dividend} ÷ ${divisor} = ?`,
+      quotient,
+      [quotient + 2, quotient - 1, quotient + 4],
+      `${dividend} ÷ ${divisor} = ${quotient}.`
+    ));
+
+    return result;
+  }
+
+  // ─────────────────────────────
+  // 2. ÁLGEBRA: 5 preguntas
+  // ─────────────────────────────
+
+  function algebraQuestions() {
+    const result = [];
+
+    // Resolver ecuaciones de primer grado.
+    for (let i = 0; i < 2; i++) {
+      const x = rand(2, 12);
+      const a = rand(2, 6);
+      const b = rand(1, 12);
+      const c = a * x + b;
+
+      result.push(question(
+        "Álgebra",
+        `Resuelve: ${a}x + ${b} = ${c}. ¿Cuánto vale x?`,
+        x,
+        [x + 1, x + 2, Math.max(0, x - 1)],
+        `Restamos ${b} a ambos lados: ${a}x = ${c - b}. Dividimos entre ${a}: x = ${x}.`
+      ));
+    }
+
+    // Simplificar términos semejantes.
+    {
+      const x = rand(2, 9);
+      const a = rand(2, 7);
+      const b = rand(1, 5);
+      const c = rand(1, 8);
+      const answer = a + b;
+
+      result.push(question(
+        "Álgebra",
+        `Simplifica: ${a}x + ${b}x − ${c}x + ${c}x. ¿Cuál es el coeficiente de x?`,
+        answer,
+        [answer + 2, Math.max(1, answer - 2), answer + 4],
+        `Sumamos los coeficientes: ${a} + ${b} − ${c} + ${c} = ${answer}. El resultado es ${answer}x.`
+      ));
+    }
+
+    // Producto de binomios conjugados.
+    {
+      const a = rand(2, 8);
+      const answer = a * a;
+
+      result.push(question(
+        "Álgebra",
+        `Al desarrollar (x + ${a})(x − ${a}), ¿cuál es el término constante?`,
+        -answer,
+        [answer, -2 * a, -answer + 2],
+        `Es una diferencia de cuadrados: (x + ${a})(x − ${a}) = x² − ${answer}.`
+      ));
+    }
+
+    // Factorización de una diferencia de cuadrados.
+    {
+      const a = rand(2, 9);
+
+      result.push(question(
+        "Álgebra",
+        `¿Cuál es la factorización de x² − ${a * a}?`,
+        2 * a,
+        [a, a * a, a + 1],
+        `La identidad es x² − a² = (x − a)(x + a). Aquí queda (x − ${a})(x + ${a}). La opción numérica representa 2a = ${2 * a}.`,
+      ));
+      // Esta pregunta se reemplaza abajo por una pregunta de
+      // identificación inequívoca de la factorización.
+      result.pop();
+
+      result.push({
+        category: "Álgebra",
+        prompt: `¿Qué expresión equivale a x² − ${a * a}?`,
+        answer: `(x − ${a})(x + ${a})`,
+        options: shuffle([
+          `(x − ${a})(x + ${a})`,
+          `(x − ${a})²`,
+          `(x + ${a})²`,
+          `x(x − ${a})`
+        ]),
+        explanation:
+          `Es una diferencia de cuadrados: x² − ${a * a} = (x − ${a})(x + ${a}).`
+      });
+    }
+
+    return result;
+  }
+
+  // ─────────────────────────────
+  // 3. LÍMITES: 5 indeterminaciones 0/0
+  // ─────────────────────────────
+
+  function limitQuestions() {
+    const result = [];
+
+    // (x² - a²)/(x-a) -> 2a
+    {
+      const a = rand(2, 8);
+      const answer = 2 * a;
+
+      result.push(question(
+        "Límites · Factorización",
+        `Calcula: lim x→${a} (x² − ${a * a}) / (x − ${a})`,
+        answer,
+        [a, answer + 2, answer - 2],
+        `Al sustituir aparece 0/0. Factorizamos: x² − ${a * a} = (x − ${a})(x + ${a}). Cancelamos (x − ${a}) y evaluamos x + ${a}: el límite es ${answer}.`
+      ));
+    }
+
+    // (x² - 9)/(x-3)
+    {
+      const a = rand(2, 8);
+      const b = a + rand(1, 5);
+      const answer = a + b;
+
+      result.push(question(
+        "Límites · Factorización",
+        `Calcula: lim x→${a} (x² − ${a * a}) / (x − ${a})`,
+        answer,
+        [a, answer + 3, answer - 3],
+        `Factorizamos x² − ${a * a} = (x − ${a})(x + ${a}). Se cancela el factor común y al evaluar x + ${a} obtenemos ${answer}.`
+      ));
+    }
+
+    // (x² + bx + c)/(x-r), con numerador factorizable.
+    {
+      const r = rand(2, 6);
+      const s = rand(1, 7);
+      const answer = r + s;
+
+      result.push(question(
+        "Límites · Factorización",
+        `Calcula: lim x→${r} (x² − ${r + s}x + ${r * s}) / (x − ${r})`,
+        r - s,
+        [r + s, s - r, r * s],
+        `El numerador factoriza como (x − ${r})(x − ${s}). Cancelamos (x − ${r}); queda x − ${s}. Al evaluar en ${r}, obtenemos ${r - s}.`
+      ));
+    }
+
+    // Cubo: (x³-a³)/(x-a) -> 3a²
+    {
+      const a = rand(2, 5);
+      const answer = 3 * a * a;
+
+      result.push(question(
+        "Límites · Factorización",
+        `Calcula: lim x→${a} (x³ − ${a ** 3}) / (x − ${a})`,
+        answer,
+        [a * a, 2 * a * a, answer + 5],
+        `Usamos x³ − a³ = (x − a)(x² + ax + a²). Cancelamos (x − ${a}) y evaluamos: ${a * a} + ${a * a} + ${a * a} = ${answer}.`
+      ));
+    }
+
+    // (x² - 4a²)/(x-2a) -> 4a
+    {
+      const a = rand(2, 7);
+      const root = 2 * a;
+      const answer = 2 * root;
+
+      result.push(question(
+        "Límites · Factorización",
+        `Calcula: lim x→${root} (x² − ${root * root}) / (x − ${root})`,
+        answer,
+        [root, answer + 2, answer - 2],
+        `Factorizamos x² − ${root * root} = (x − ${root})(x + ${root}). Cancelamos el factor común. El límite es ${root} + ${root} = ${answer}.`
+      ));
+    }
+
+    return result;
+  }
+
+  // ─────────────────────────────
+  // 4. DERIVADAS: 5 sin trigonometría
+  // ─────────────────────────────
+
+  function derivativeQuestions() {
+    const result = [];
+
+    for (let i = 0; i < 5; i++) {
+      const a = rand(1, 5);
+      const b = rand(-8, 8);
+      const c = rand(-10, 10);
+      const x = rand(1, 5);
+      const answer = 2 * a * x + b;
+
+      const polynomial = [
+        `${a}x²`,
+        b === 0 ? "" : `${b > 0 ? "+" : "−"} ${Math.abs(b)}x`,
+        c === 0 ? "" : `${c > 0 ? "+" : "−"} ${Math.abs(c)}`
+      ].filter(Boolean).join(" ");
+
+      const distractors = [
+        a * x + b,
+        2 * a + b,
+        2 * a * x + c
+      ];
+
+      result.push(question(
+        "Derivadas",
+        `Si f(x) = ${polynomial}, ¿cuánto vale f'(${x})?`,
+        answer,
+        distractors,
+        `Derivamos término a término: la derivada de ${a}x² es ${2 * a}x, la de ${b}x es ${b} y la constante desaparece. Así, f'(x) = ${2 * a}x ${b < 0 ? "− " + Math.abs(b) : "+ " + b}; al sustituir x = ${x}, obtenemos ${answer}.`
+      ));
+    }
+
+    return result;
+  }
+
+  function createExam() {
+    questions = shuffle([
+      ...arithmeticQuestions(),
+      ...algebraQuestions(),
+      ...limitQuestions(),
+      ...derivativeQuestions()
+    ]);
+
+    // Comprobación de que haya exactamente 20 preguntas.
+    if (questions.length !== TOTAL) {
+      throw new Error("El examen debe tener exactamente 20 preguntas.");
+    }
+  }
+
+  function start() {
+    createExam();
+    current = 0;
+    correct = 0;
+
+    $("quiz").hidden = false;
+    $("results").hidden = true;
+
+    render();
+  }
+
+  function render() {
+    answered = false;
+    const q = questions[current];
+
+    $("category").textContent = q.category;
+    $("progress").textContent = `Pregunta ${current + 1} de ${TOTAL}`;
+    $("bar").style.width = `${current / TOTAL * 100}%`;
+    $("question").textContent = q.prompt;
+
+    $("options").replaceChildren();
+    $("feedback").className = "feedback";
+    $("feedback").replaceChildren();
+
+    $("next").disabled = true;
+    $("next").textContent =
+      current === TOTAL - 1 ? "Ver resultado →" : "Siguiente pregunta →";
+
+    q.options.forEach((value, i) => {
+      const button = document.createElement("button");
+      button.className = "option";
+
+      const letter = document.createElement("span");
+      letter.className = "letter";
+      letter.textContent = String.fromCharCode(65 + i);
+
+      const text = document.createElement("span");
+      text.textContent = String(value);
+
+      button.append(letter, text);
+      button.addEventListener("click", () => choose(value, button));
+      $("options").append(button);
+    });
+  }
+
+  function choose(value, button) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[current];
+
+    [...$("options").children].forEach((el, i) => {
+      el.disabled = true;
+
+      if (q.options[i] === q.answer) {
+        el.classList.add("correct");
+      }
+    });
+
+    const isCorrect = value === q.answer;
+    if (isCorrect) correct++;
+    else button.classList.add("wrong");
+
+    $("feedback").className = "feedback show";
+
+    const title = document.createElement("strong");
+    title.textContent = isCorrect
+      ? "¡irala, vas con todo!"
+      : `Casi. La respuesta correcta es ${q.answer}.`;
+
+    const explanation = document.createElement("span");
+    explanation.textContent = q.explanation;
+
+    $("feedback").append(title, explanation);
+
+    $("next").disabled = false;
+    $("bar").style.width = `${(current + 1) / TOTAL * 100}%`;
+  }
+
+  $("next").addEventListener("click", () => {
+    if (!answered) return;
+
+    current++;
+
+    if (current < TOTAL) render();
+    else finish();
+  });
+
+  function finish() {
+    $("quiz").hidden = true;
+    $("results").hidden = false;
+
+    const percent = Math.round(correct / TOTAL * 100);
+    const wrong = TOTAL - correct;
+
+    $("score").textContent = `${correct}/${TOTAL}`;
+
+    $("message").textContent =
+      percent === 100 ? "ya lista pa ser maeta" :
+      percent >= 60 ? "a perrilla" :
+      "te amo";
+
+    $("details").textContent =
+      `Obtuviste ${percent}% de respuestas correctas. Cada reto te ayuda a mejorar.`;
+
+    $("correctStats").textContent = `Respuestas correctas: ${correct}`;
+    $("wrongStats").textContent = `Respuestas incorrectas: ${wrong}`;
+    $("percentStats").textContent = `Calificación: ${percent}%`;
+  }
+
+  $("restart").addEventListener("click", start);
+
+  start();
+})();
+</script>
+</body>
+</html>
