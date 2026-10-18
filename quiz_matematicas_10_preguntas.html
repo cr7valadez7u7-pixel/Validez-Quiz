@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz de Matemáticas · 10 preguntas</title>
+<style>
+:root{--bg:#0b1020;--panel:#141c31;--panel2:#1b2742;--text:#eef3ff;--muted:#aab6d3;--accent:#7c9cff;--good:#37d6a3;--bad:#ff7185}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1c2a50 0,#0b1020 55%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+main{width:min(850px,94%);margin:36px auto 60px}.hero,.quiz,.results{background:rgba(20,28,49,.96);border:1px solid #2a3859;border-radius:22px;padding:clamp(20px,4vw,36px);box-shadow:0 18px 55px #0003}
+.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.13em;font-size:.78rem}.hero h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;margin:12px 0}.hero p,.muted{color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}.pill{background:var(--panel2);border:1px solid #334467;border-radius:999px;padding:7px 12px;font-size:.88rem}
+button{font:inherit;font-weight:750;cursor:pointer;border:0;border-radius:12px;padding:12px 18px;transition:transform .15s,opacity .15s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.4;cursor:not-allowed;transform:none}.primary{background:var(--accent);color:#081126}.secondary{background:#263451;color:var(--text);border:1px solid #405174}
+.hidden{display:none!important}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.progress{height:8px;background:#283653;border-radius:20px;overflow:hidden;margin:14px 0 26px}.bar{height:100%;width:0;background:linear-gradient(90deg,#7c9cff,#37d6a3);transition:width .25s}
+.section{color:var(--accent);font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.question{font-size:clamp(1.25rem,3.5vw,1.75rem);margin:8px 0 22px}.options{display:grid;gap:11px}.option{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:#1a2540;color:var(--text);border:1px solid #344463;padding:14px 16px;border-radius:13px;font-weight:550}.option .letter{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:9px;background:#2a395b;color:#cdd8ff;font-weight:800}.option.selected{border-color:var(--accent);background:#25345a}.option.correct{border-color:var(--good);background:#123a37}.option.wrong{border-color:var(--bad);background:#462434}
+.controls{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.controls div{display:flex;gap:8px}.feedback{margin-top:16px;padding:12px 14px;border-radius:12px;background:#1d2a45;color:var(--muted)}.score{font-size:3.5rem;font-weight:900;color:var(--good);line-height:1.2}.review-item{padding:16px 0;border-bottom:1px solid #2d3a57}.review-item:last-child{border-bottom:0}.tag-good{color:var(--good)}.tag-bad{color:var(--bad)}footer{text-align:center;color:#8592b1;font-size:.82rem;margin-top:18px}
+@media(max-width:520px){main{margin:16px auto 32px}.controls{flex-direction:column}.controls>div{display:grid;grid-template-columns:1fr 1fr}.controls button{width:100%}}
+</style></head><body><main>
+<section class="hero" id="intro">
+<div class="eyebrow">Evaluación interactiva · 10 preguntas</div><h1>Quiz de<br>Matemáticas</h1>
+<p>Practica operaciones, álgebra básica y los conceptos iniciales de cálculo diferencial. Elige una respuesta por pregunta y al final revisa tu puntuación y las soluciones.</p>
+<div class="pills"><span class="pill">5 · Aritmética y álgebra</span><span class="pill">5 · Límites y derivadas</span><span class="pill">100 puntos</span></div>
+<p class="muted">Tiempo sugerido: 8 minutos. El temporizador es opcional y no afecta tu calificación.</p><button class="primary" id="startBtn">Comenzar quiz →</button>
+</section>
+<section class="quiz hidden" id="quiz">
+<div class="topline"><span class="section" id="partLabel"></span><strong id="timer">08:00</strong></div>
+<div class="topline"><span class="muted" id="count"></span><span class="muted" id="answered"></span></div><div class="progress"><div class="bar" id="bar"></div></div>
+<div class="section" id="topic"></div><h2 class="question" id="question"></h2><div class="options" id="options"></div>
+<div id="feedback" class="feedback hidden" aria-live="polite"></div>
+<div class="controls"><button class="secondary" id="prevBtn">← Anterior</button><div><button class="secondary" id="checkBtn">Revisar respuesta</button><button class="primary" id="nextBtn">Siguiente →</button><button class="primary hidden" id="finishBtn">Ver resultados</button></div></div>
+</section>
+<section class="results hidden" id="results"><div class="eyebrow">Quiz terminado</div><h1>Tu resultado</h1><div class="score" id="score">0/100</div><p id="summary" class="muted"></p><div class="pills" id="breakdown"></div><h2>Revisión de respuestas</h2><div id="review"></div><button class="primary" id="restartBtn">Volver a intentarlo ↻</button></section>
+<footer>Hecho para practicar · Puedes repetir el quiz las veces que quieras.</footer></main>
+<script>
+const questions=[
+{part:1,topic:"Aritmética",q:"¿Cuánto es 12 ÷ 3 + 2?",opts:["2","4","6","8"],a:2,exp:"Primero se hace la división: 12 ÷ 3 = 4. Luego se suma 2: resultado 6."},
+{part:1,topic:"Fracciones",q:"¿Cuánto es 1/2 + 1/4?",opts:["2/6","3/4","1/4","1"],a:1,exp:"1/2 equivale a 2/4; entonces 2/4 + 1/4 = 3/4."},
+{part:1,topic:"Álgebra",q:"Simplifica: 4x + 2x.",opts:["6","6x","8x","4x²"],a:1,exp:"Se suman los coeficientes: 4x + 2x = 6x."},
+{part:1,topic:"Ecuaciones",q:"Resuelve: x + 5 = 12.",opts:["5","6","7","17"],a:2,exp:"Resta 5 en ambos lados: x = 12 − 5 = 7."},
+{part:1,topic:"Potencias",q:"¿Cuánto es 3²?",opts:["6","9","8","12"],a:1,exp:"3² significa 3 × 3 = 9."},
+{part:2,topic:"Límites básicos",q:"Si f(x) = x + 2, ¿cuánto vale limₓ→₃ f(x)?",opts:["2","3","5","6"],a:2,exp:"Como la función es continua, sustituimos x por 3: 3 + 2 = 5."},
+{part:2,topic:"Límites básicos",q:"Calcula: limₓ→₂ x².",opts:["2","4","6","8"],a:1,exp:"Sustituimos x = 2: 2² = 4."},
+{part:2,topic:"Idea de derivada",q:"¿Qué representa la derivada de una función en un punto?",opts:["El área total siempre","La pendiente de la recta tangente","El valor de x siempre","La raíz de la función"],a:1,exp:"La derivada en un punto representa la pendiente de la recta tangente a la gráfica en ese punto."},
+{part:2,topic:"Derivadas",q:"Si f(x) = x², ¿cuál es su derivada?",opts:["x","2x","x³","2"],a:1,exp:"Aplicando la regla de la potencia, la derivada de x² es 2x."},
+{part:2,topic:"Derivadas",q:"Si f(x) = 3x, ¿cuál es f′(x)?",opts:["3","3x²","x","0"],a:0,exp:"La derivada de 3x es 3, porque la derivada de x es 1."}
+];
+const $=id=>document.getElementById(id);let idx=0,answers=Array(10).fill(null),checked=Array(10).fill(false),seconds=480,timerId=null;
+function start(){$("intro").classList.add("hidden");$("results").classList.add("hidden");$("quiz").classList.remove("hidden");idx=0;answers=Array(10).fill(null);checked=Array(10).fill(false);seconds=480;clearInterval(timerId);updateTimer();timerId=setInterval(()=>{seconds--;updateTimer();if(seconds<=0){clearInterval(timerId);finish();}},1000);render();}
+function updateTimer(){let m=Math.floor(seconds/60),s=seconds%60;$("timer").textContent=`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;$("timer").style.color=seconds<60?"var(--bad)":"var(--text)"}
+function render(){let q=questions[idx];$("partLabel").textContent=q.part===1?"Parte 1 · Aritmética y álgebra":"Parte 2 · Cálculo diferencial";$("count").textContent=`Pregunta ${idx+1} de 10`;$("answered").textContent=`Respondidas: ${answers.filter(v=>v!==null).length}`;$("bar").style.width=`${(idx+1)*10}%`;$("topic").textContent=q.topic;$("question").textContent=q.q;$("options").innerHTML="";
+q.opts.forEach((opt,i)=>{let b=document.createElement("button");b.className="option"+(answers[idx]===i?" selected":"");if(checked[idx]){b.disabled=true;if(i===q.a)b.classList.add("correct");else if(answers[idx]===i)b.classList.add("wrong")}let l=document.createElement("span");l.className="letter";l.textContent=String.fromCharCode(65+i);let t=document.createElement("span");t.textContent=opt;b.append(l,t);b.onclick=()=>{answers[idx]=i;render()};$("options").appendChild(b)});
+$("feedback").classList.toggle("hidden",!checked[idx]);if(checked[idx])$("feedback").textContent=(answers[idx]===q.a?"¡Correcto! ":"Respuesta incorrecta. ")+q.exp;
+$("prevBtn").disabled=idx===0;$("nextBtn").classList.toggle("hidden",idx===9);$("finishBtn").classList.toggle("hidden",idx!==9);$("checkBtn").disabled=answers[idx]===null||checked[idx]}
+function finish(){clearInterval(timerId);$("quiz").classList.add("hidden");$("results").classList.remove("hidden");let correct=answers.reduce((n,a,i)=>n+(a===questions[i].a?1:0),0),p1=questions.reduce((n,q,i)=>n+(q.part===1&&answers[i]===q.a?1:0),0);$("score").textContent=`${correct*10}/100`;$("summary").textContent=`Contestaste correctamente ${correct} de 10 preguntas.`;$("breakdown").innerHTML=`<span class="pill">Aritmética y álgebra: ${p1}/5</span><span class="pill">Cálculo diferencial: ${correct-p1}/5</span>`;$("review").innerHTML="";
+questions.forEach((q,i)=>{let d=document.createElement("div");d.className="review-item";let h=document.createElement("strong");h.textContent=`${i+1}. ${q.q}`;let r=document.createElement("p");r.className=answers[i]===q.a?"tag-good":"tag-bad";r.textContent=answers[i]===null?"Sin responder":answers[i]===q.a?"Correcta":"Tu respuesta: "+q.opts[answers[i]];let s=document.createElement("p");s.textContent=`Respuesta correcta: ${q.opts[q.a]}. ${q.exp}`;d.append(h,r,s);$("review").appendChild(d)});window.scrollTo({top:0,behavior:"smooth"})}
+$("startBtn").onclick=start;$("prevBtn").onclick=()=>{if(idx>0){idx--;render()}};$("nextBtn").onclick=()=>{if(idx<9){idx++;render()}};$("checkBtn").onclick=()=>{if(answers[idx]!==null){checked[idx]=true;render()}};$("finishBtn").onclick=finish;$("restartBtn").onclick=()=>{$("results").classList.add("hidden");$("intro").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})};
+</script></body></html>
